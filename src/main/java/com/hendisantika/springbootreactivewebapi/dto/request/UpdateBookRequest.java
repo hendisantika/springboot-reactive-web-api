@@ -1,4 +1,4 @@
-package com.hendisantika.springbootreactivewebapi.dto;
+package com.hendisantika.springbootreactivewebapi.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,13 +12,13 @@ import lombok.Setter;
  * Email: hendisantika@gmail.com
  * Telegram : @hendisantika34
  * Date: 2019-06-28
- * Time: 06:27
+ * Time: 06:28
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddBookRequest {
+public class UpdateBookRequest {
+    private String id;
     private String title;
-    private String authorId;
 }
