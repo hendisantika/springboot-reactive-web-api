@@ -110,4 +110,21 @@ public class BookServiceImpl implements BookService {
         bookResponse.setAuthorName(book.getAuthor().getName());
         return bookResponse;
     }
+
+    @Override
+    public Single<BookResponse> getBookDetail(String id) {
+        return findBookDetailInRepository(id);
+    }
+
+    private Single<BookResponse> findBookDetailInRepository(String id) {
+        return Single.create(singleSubscriber -> {
+            Optional<Book> optionalBook = bookRepository.findById(id);
+            if (!optionalBook.isPresent())
+                singleSubscriber.onError(new EntityNotFoundException());
+            else {
+                BookResponse bookResponse = toBookResponse(optionalBook.get());
+                singleSubscriber.onSuccess(bookResponse);
+            }
+        });
+    }
 }
