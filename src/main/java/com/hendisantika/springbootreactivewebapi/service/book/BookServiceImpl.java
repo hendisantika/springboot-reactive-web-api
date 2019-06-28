@@ -2,14 +2,17 @@ package com.hendisantika.springbootreactivewebapi.service.book;
 
 import com.hendisantika.springbootreactivewebapi.dto.request.AddBookRequest;
 import com.hendisantika.springbootreactivewebapi.entity.Author;
+import com.hendisantika.springbootreactivewebapi.entity.Book;
 import com.hendisantika.springbootreactivewebapi.repository.AuthorRepository;
 import com.hendisantika.springbootreactivewebapi.repository.BookRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rx.Single;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,5 +46,15 @@ public class BookServiceImpl implements BookService {
                 singleSubscriber.onSuccess(addedBookId);
             }
         });
+    }
+
+    private Book toBook(AddBookRequest addBookRequest) {
+        Book book = new Book();
+        BeanUtils.copyProperties(addBookRequest, book);
+        book.setId(UUID.randomUUID().toString());
+        book.setAuthor(Author.builder()
+                .id(addBookRequest.getAuthorId())
+                .build());
+        return book;
     }
 }
