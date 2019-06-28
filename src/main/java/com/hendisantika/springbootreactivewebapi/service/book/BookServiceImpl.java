@@ -2,19 +2,23 @@ package com.hendisantika.springbootreactivewebapi.service.book;
 
 import com.hendisantika.springbootreactivewebapi.dto.request.AddBookRequest;
 import com.hendisantika.springbootreactivewebapi.dto.request.UpdateBookRequest;
+import com.hendisantika.springbootreactivewebapi.dto.response.BookResponse;
 import com.hendisantika.springbootreactivewebapi.entity.Author;
 import com.hendisantika.springbootreactivewebapi.entity.Book;
 import com.hendisantika.springbootreactivewebapi.repository.AuthorRepository;
 import com.hendisantika.springbootreactivewebapi.repository.BookRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import rx.Completable;
 import rx.Single;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by IntelliJ IDEA.
@@ -77,5 +81,33 @@ public class BookServiceImpl implements BookService {
                 completableSubscriber.onCompleted();
             }
         });
+    }
+
+    @Override
+    public Single<List<BookResponse>> getAllBooks(int limit, int page) {
+        return findAllBooksInRepository(limit, page)
+                .map(this::toBookResponseList);
+    }
+
+    private Single<List<Book>> findAllBooksInRepository(int limit, int page) {
+        return Single.create(singleSubscriber -> {
+            List<Book> books = bookRepository.findAll(PageRequest.of(page, limit)).getContent();
+            singleSubscriber.onSuccess(books);
+        });
+    }
+
+    private List<BookResponse> toBookResponseList(List<Book> bookList) {
+        return bookList
+                .stream()
+                .map(this::toBookResponse)
+                .collect(Collectors.toList());
+    }
+
+
+    private BookResponse toBookResponse(Book book) {
+        BookResponse bookResponse = new BookResponse();
+        BeanUtils.copyProperties(book, bookResponse);
+        bookResponse.setAuthorName(book.getAuthor().getName());
+        return bookResponse;
     }
 }
