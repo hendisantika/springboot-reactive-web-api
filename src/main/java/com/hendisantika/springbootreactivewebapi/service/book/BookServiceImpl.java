@@ -1,6 +1,7 @@
 package com.hendisantika.springbootreactivewebapi.service.book;
 
 import com.hendisantika.springbootreactivewebapi.dto.request.AddBookRequest;
+import com.hendisantika.springbootreactivewebapi.dto.request.UpdateBookRequest;
 import com.hendisantika.springbootreactivewebapi.entity.Author;
 import com.hendisantika.springbootreactivewebapi.entity.Book;
 import com.hendisantika.springbootreactivewebapi.repository.AuthorRepository;
@@ -8,6 +9,7 @@ import com.hendisantika.springbootreactivewebapi.repository.BookRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import rx.Completable;
 import rx.Single;
 
 import javax.persistence.EntityNotFoundException;
@@ -56,5 +58,24 @@ public class BookServiceImpl implements BookService {
                 .id(addBookRequest.getAuthorId())
                 .build());
         return book;
+    }
+
+    @Override
+    public Completable updateBook(UpdateBookRequest updateBookRequest) {
+        return updateBookToRepository(updateBookRequest);
+    }
+
+    private Completable updateBookToRepository(UpdateBookRequest updateBookRequest) {
+        return Completable.create(completableSubscriber -> {
+            Optional<Book> optionalBook = bookRepository.findById(updateBookRequest.getId());
+            if (!optionalBook.isPresent())
+                completableSubscriber.onError(new EntityNotFoundException());
+            else {
+                Book book = optionalBook.get();
+                book.setTitle(updateBookRequest.getTitle());
+                bookRepository.save(book);
+                completableSubscriber.onCompleted();
+            }
+        });
     }
 }
