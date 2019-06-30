@@ -1,10 +1,16 @@
 package com.hendisantika.springbootreactivewebapi.service.author;
 
+import com.hendisantika.springbootreactivewebapi.dto.request.AddAuthorRequest;
+import com.hendisantika.springbootreactivewebapi.entity.Author;
 import com.hendisantika.springbootreactivewebapi.repository.AuthorRepository;
 import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,5 +32,19 @@ public class AuthorServiceImplTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void AddAuthor_Success_ReturnSingleOfAddedAuthorId() {
+        when(authorRepository.save(any(Author.class)))
+                .thenReturn(new Author("1", "Axell"));
+
+        authorService.addAuthor(new AddAuthorRequest("1"))
+                .test()
+                .assertComplete()
+                .assertNoErrors()
+                .awaitTerminalEvent();
+
+        verify(authorRepository, times(1)).save(any(Author.class));
     }
 }
