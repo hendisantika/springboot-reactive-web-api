@@ -62,5 +62,21 @@ public class BookServiceImplTest {
         inOrder.verify(bookRepository, times(1)).save(any(Book.class));
     }
 
+    @Test
+    public void AddBook_Failed_AuthorIdNotFound_ThrowEntityNotFoundException() {
+        when(authorRepository.findById(anyString()))
+                .thenReturn(Optional.empty());
+
+        bookService.addBook(new AddBookRequest("1", "1"))
+                .test()
+                .assertNotComplete()
+                .assertError(EntityNotFoundException.class)
+                .awaitTerminalEvent();
+
+        InOrder inOrder = inOrder(authorRepository, bookRepository);
+        inOrder.verify(authorRepository, times(1)).findById(anyString());
+        inOrder.verify(bookRepository, never()).save(any(Book.class));
+    }
+
 
 }
