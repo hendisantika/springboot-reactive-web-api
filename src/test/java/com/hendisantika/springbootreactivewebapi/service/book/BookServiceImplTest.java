@@ -1,6 +1,7 @@
 package com.hendisantika.springbootreactivewebapi.service.book;
 
 import com.hendisantika.springbootreactivewebapi.dto.request.AddBookRequest;
+import com.hendisantika.springbootreactivewebapi.dto.request.UpdateBookRequest;
 import com.hendisantika.springbootreactivewebapi.entity.Author;
 import com.hendisantika.springbootreactivewebapi.entity.Book;
 import com.hendisantika.springbootreactivewebapi.repository.AuthorRepository;
@@ -12,12 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -76,6 +77,24 @@ public class BookServiceImplTest {
         InOrder inOrder = inOrder(authorRepository, bookRepository);
         inOrder.verify(authorRepository, times(1)).findById(anyString());
         inOrder.verify(bookRepository, never()).save(any(Book.class));
+    }
+
+    @Test
+    public void UpdateBook_Success_ReturnCompletable() {
+        when(bookRepository.findById(anyString()))
+                .thenReturn(Optional.of(new Book("1", "1", new Author())));
+        when(bookRepository.save(any(Book.class)))
+                .thenReturn(new Book("1", "1", new Author()));
+
+        bookService.updateBook(new UpdateBookRequest("1", "1"))
+                .test()
+                .assertComplete()
+                .assertNoErrors()
+                .awaitTerminalEvent();
+
+        InOrder inOrder = inOrder(bookRepository);
+        inOrder.verify(bookRepository, times(1)).findById(anyString());
+        inOrder.verify(bookRepository, times(1)).save(any(Book.class));
     }
 
 
