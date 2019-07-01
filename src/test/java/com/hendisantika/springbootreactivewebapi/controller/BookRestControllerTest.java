@@ -105,5 +105,23 @@ public class BookRestControllerTest {
         verify(bookService, times(1)).updateBook(any(UpdateBookRequest.class));
     }
 
+    @Test
+    public void UpdateBook_Failed_BookIdNotFound_Return404EntityNotFound() throws Exception {
+        when(bookService.updateBook(any(UpdateBookRequest.class)))
+                .thenReturn(Completable.error(new EntityNotFoundException()));
+
+        MvcResult mvcResult = mockMvc.perform(put("/api/books/id", "123")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new UpdateBookWebRequest())))
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorCode", equalTo(ErrorCode.ENTITY_NOT_FOUND.toString())))
+                .andExpect(jsonPath("$.data", nullValue()));
+
+        verify(bookService, times(1)).updateBook(any(UpdateBookRequest.class));
+    }
+
 
 }
