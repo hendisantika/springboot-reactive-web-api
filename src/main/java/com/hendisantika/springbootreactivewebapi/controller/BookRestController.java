@@ -2,16 +2,15 @@ package com.hendisantika.springbootreactivewebapi.controller;
 
 import com.hendisantika.springbootreactivewebapi.dto.request.AddBookRequest;
 import com.hendisantika.springbootreactivewebapi.dto.request.AddBookWebRequest;
+import com.hendisantika.springbootreactivewebapi.dto.request.UpdateBookRequest;
+import com.hendisantika.springbootreactivewebapi.dto.request.UpdateBookWebRequest;
 import com.hendisantika.springbootreactivewebapi.dto.response.BaseWebResponse;
 import com.hendisantika.springbootreactivewebapi.service.book.BookService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import rx.Single;
 import rx.schedulers.Schedulers;
 
@@ -47,5 +46,24 @@ public class BookRestController {
         AddBookRequest addBookRequest = new AddBookRequest();
         BeanUtils.copyProperties(addBookWebRequest, addBookRequest);
         return addBookRequest;
+    }
+
+    @PutMapping(
+            value = "/{bookId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public Single<ResponseEntity<BaseWebResponse>> updateBook(@PathVariable(value = "bookId") String bookId,
+                                                              @RequestBody UpdateBookWebRequest updateBookWebRequest) {
+        return bookService.updateBook(toUpdateBookRequest(bookId, updateBookWebRequest))
+                .subscribeOn(Schedulers.io())
+                .toSingle(() -> ResponseEntity.ok(BaseWebResponse.successNoData()));
+    }
+
+    private UpdateBookRequest toUpdateBookRequest(String bookId, UpdateBookWebRequest updateBookWebRequest) {
+        UpdateBookRequest updateBookRequest = new UpdateBookRequest();
+        BeanUtils.copyProperties(updateBookWebRequest, updateBookRequest);
+        updateBookRequest.setId(bookId);
+        return updateBookRequest;
     }
 }
