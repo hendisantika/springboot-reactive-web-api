@@ -94,4 +94,14 @@ public class BookRestController {
         return bookWebResponse;
     }
 
+    @GetMapping(
+            value = "/{bookId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public Single<ResponseEntity<BaseWebResponse<BookWebResponse>>> getBookDetail(@PathVariable(value = "bookId") String bookId) {
+        return bookService.getBookDetail(bookId)
+                .subscribeOn(Schedulers.io())
+                .map(bookResponse -> ResponseEntity.ok(BaseWebResponse.successWithData(toBookWebResponse(bookResponse))));
+    }
+
 }
