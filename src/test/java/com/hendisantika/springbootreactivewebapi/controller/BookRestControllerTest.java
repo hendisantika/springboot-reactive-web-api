@@ -3,6 +3,8 @@ package com.hendisantika.springbootreactivewebapi.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hendisantika.springbootreactivewebapi.dto.request.AddBookRequest;
 import com.hendisantika.springbootreactivewebapi.dto.request.AddBookWebRequest;
+import com.hendisantika.springbootreactivewebapi.dto.request.UpdateBookRequest;
+import com.hendisantika.springbootreactivewebapi.dto.request.UpdateBookWebRequest;
 import com.hendisantika.springbootreactivewebapi.entity.ErrorCode;
 import com.hendisantika.springbootreactivewebapi.service.book.BookService;
 import org.junit.Test;
@@ -14,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import rx.Completable;
 import rx.Single;
 
 import javax.persistence.EntityNotFoundException;
@@ -22,8 +25,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -83,6 +85,24 @@ public class BookRestControllerTest {
                 .andExpect(jsonPath("$.data", nullValue()));
 
         verify(bookService, times(1)).addBook(any(AddBookRequest.class));
+    }
+
+    @Test
+    public void UpdateBook_Success_Return200() throws Exception {
+        when(bookService.updateBook(any(UpdateBookRequest.class)))
+                .thenReturn(Completable.complete());
+
+        MvcResult mvcResult = mockMvc.perform(put("/api/books/id", "123")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new UpdateBookWebRequest())))
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errorCode", nullValue()))
+                .andExpect(jsonPath("$.data", nullValue()));
+
+        verify(bookService, times(1)).updateBook(any(UpdateBookRequest.class));
     }
 
 
