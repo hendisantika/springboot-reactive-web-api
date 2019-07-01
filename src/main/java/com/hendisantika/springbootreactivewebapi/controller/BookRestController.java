@@ -5,6 +5,8 @@ import com.hendisantika.springbootreactivewebapi.dto.request.AddBookWebRequest;
 import com.hendisantika.springbootreactivewebapi.dto.request.UpdateBookRequest;
 import com.hendisantika.springbootreactivewebapi.dto.request.UpdateBookWebRequest;
 import com.hendisantika.springbootreactivewebapi.dto.response.BaseWebResponse;
+import com.hendisantika.springbootreactivewebapi.dto.response.BookResponse;
+import com.hendisantika.springbootreactivewebapi.dto.response.BookWebResponse;
 import com.hendisantika.springbootreactivewebapi.service.book.BookService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ import rx.Single;
 import rx.schedulers.Schedulers;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by IntelliJ IDEA.
@@ -66,4 +70,28 @@ public class BookRestController {
         updateBookRequest.setId(bookId);
         return updateBookRequest;
     }
+
+    @GetMapping(
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public Single<ResponseEntity<BaseWebResponse<List<BookWebResponse>>>> getAllBooks(@RequestParam(value = "limit", defaultValue = "5") int limit,
+                                                                                      @RequestParam(value = "page", defaultValue = "0") int page) {
+        return bookService.getAllBooks(limit, page)
+                .subscribeOn(Schedulers.io())
+                .map(bookResponses -> ResponseEntity.ok(BaseWebResponse.successWithData(toBookWebResponseList(bookResponses))));
+    }
+
+    private List<BookWebResponse> toBookWebResponseList(List<BookResponse> bookResponseList) {
+        return bookResponseList
+                .stream()
+                .map(this::toBookWebResponse)
+                .collect(Collectors.toList());
+    }
+
+    private BookWebResponse toBookWebResponse(BookResponse bookResponse) {
+        BookWebResponse bookWebResponse = new BookWebResponse();
+        BeanUtils.copyProperties(bookResponse, bookWebResponse);
+        return bookWebResponse;
+    }
+
 }
