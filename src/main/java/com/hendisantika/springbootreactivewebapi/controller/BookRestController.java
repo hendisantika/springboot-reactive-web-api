@@ -104,4 +104,13 @@ public class BookRestController {
                 .map(bookResponse -> ResponseEntity.ok(BaseWebResponse.successWithData(toBookWebResponse(bookResponse))));
     }
 
+    @DeleteMapping(
+            value = "/{bookId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public Single<ResponseEntity<BaseWebResponse>> deleteBook(@PathVariable(value = "bookId") String bookId) {
+        return bookService.deleteBook(bookId)
+                .subscribeOn(Schedulers.io())
+                .toSingle(() -> ResponseEntity.ok(BaseWebResponse.successNoData()));
+    }
 }
