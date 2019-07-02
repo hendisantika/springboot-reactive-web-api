@@ -142,5 +142,22 @@ public class BookRestControllerTest {
         verify(bookService, times(1)).getAllBooks(anyInt(), anyInt());
     }
 
+    @Test
+    public void GetAllBooks_LimitAndPageNotSpecified_Success_Return200WithListOfBookWebResponse() throws Exception {
+        when(bookService.getAllBooks(anyInt(), anyInt()))
+                .thenReturn(Single.just(Collections.singletonList(new BookResponse("1", "1", "1"))));
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/books")
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errorCode", nullValue()))
+                .andExpect(jsonPath("$.data[0].id", equalTo("1")));
+
+        verify(bookService, times(1)).getAllBooks(anyInt(), anyInt());
+    }
+
 
 }
