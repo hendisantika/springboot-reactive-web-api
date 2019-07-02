@@ -7,12 +7,12 @@ import com.hendisantika.springbootreactivewebapi.entity.Author;
 import com.hendisantika.springbootreactivewebapi.entity.Book;
 import com.hendisantika.springbootreactivewebapi.repository.AuthorRepository;
 import com.hendisantika.springbootreactivewebapi.repository.BookRepository;
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import rx.Completable;
-import rx.Single;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -78,7 +78,7 @@ public class BookServiceImpl implements BookService {
                 Book book = optionalBook.get();
                 book.setTitle(updateBookRequest.getTitle());
                 bookRepository.save(book);
-                completableSubscriber.onCompleted();
+                completableSubscriber.onComplete();
             }
         });
     }
@@ -140,7 +140,7 @@ public class BookServiceImpl implements BookService {
                 completableSubscriber.onError(new EntityNotFoundException());
             else {
                 bookRepository.delete(optionalBook.get());
-                completableSubscriber.onCompleted();
+                completableSubscriber.onComplete();
             }
         });
     }

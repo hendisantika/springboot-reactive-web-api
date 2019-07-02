@@ -3,8 +3,8 @@ package com.hendisantika.springbootreactivewebapi.service.book;
 import com.hendisantika.springbootreactivewebapi.dto.request.AddBookRequest;
 import com.hendisantika.springbootreactivewebapi.dto.request.UpdateBookRequest;
 import com.hendisantika.springbootreactivewebapi.dto.response.BookResponse;
-import rx.Completable;
-import rx.Single;
+import io.reactivex.Completable;
+import io.reactivex.Single;
 
 import java.util.List;
 
