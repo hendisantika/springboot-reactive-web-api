@@ -210,5 +210,22 @@ public class BookRestControllerTest {
         verify(bookService, times(1)).deleteBook(anyString());
     }
 
+    @Test
+    public void DeleteBook_Failed_BookIdNotFound_Return404EntityNotFound() throws Exception {
+        when(bookService.deleteBook(anyString()))
+                .thenReturn(Completable.error(new EntityNotFoundException()));
+
+        MvcResult mvcResult = mockMvc.perform(delete("/api/books/1")
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorCode", equalTo(ErrorCode.ENTITY_NOT_FOUND.toString())))
+                .andExpect(jsonPath("$.data", nullValue()));
+
+        verify(bookService, times(1)).deleteBook(anyString());
+    }
+
 
 }
