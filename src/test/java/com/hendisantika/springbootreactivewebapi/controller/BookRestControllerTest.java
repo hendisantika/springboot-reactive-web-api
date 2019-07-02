@@ -193,5 +193,22 @@ public class BookRestControllerTest {
         verify(bookService, times(1)).getBookDetail(anyString());
     }
 
+    @Test
+    public void DeleteBook_Success_Return200() throws Exception {
+        when(bookService.deleteBook(anyString()))
+                .thenReturn(Completable.complete());
+
+        MvcResult mvcResult = mockMvc.perform(delete("/api/books/1")
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errorCode", nullValue()))
+                .andExpect(jsonPath("$.data", nullValue()));
+
+        verify(bookService, times(1)).deleteBook(anyString());
+    }
+
 
 }
