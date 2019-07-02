@@ -8,6 +8,8 @@ import com.hendisantika.springbootreactivewebapi.dto.request.UpdateBookWebReques
 import com.hendisantika.springbootreactivewebapi.dto.response.BookResponse;
 import com.hendisantika.springbootreactivewebapi.entity.ErrorCode;
 import com.hendisantika.springbootreactivewebapi.service.book.BookService;
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import rx.Completable;
-import rx.Single;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
