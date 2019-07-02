@@ -3,10 +3,10 @@ package com.hendisantika.springbootreactivewebapi.service.author;
 import com.hendisantika.springbootreactivewebapi.dto.request.AddAuthorRequest;
 import com.hendisantika.springbootreactivewebapi.entity.Author;
 import com.hendisantika.springbootreactivewebapi.repository.AuthorRepository;
+import io.reactivex.Single;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import rx.Single;
 
 import java.util.UUID;
 

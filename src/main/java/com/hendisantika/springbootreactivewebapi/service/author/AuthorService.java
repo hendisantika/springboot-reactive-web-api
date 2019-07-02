@@ -1,7 +1,7 @@
 package com.hendisantika.springbootreactivewebapi.service.author;
 
 import com.hendisantika.springbootreactivewebapi.dto.request.AddAuthorRequest;
-import rx.Single;
+import io.reactivex.Single;
 
 /**
  * Created by IntelliJ IDEA.
