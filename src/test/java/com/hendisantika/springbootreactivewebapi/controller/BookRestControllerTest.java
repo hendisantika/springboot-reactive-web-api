@@ -5,6 +5,7 @@ import com.hendisantika.springbootreactivewebapi.dto.request.AddBookRequest;
 import com.hendisantika.springbootreactivewebapi.dto.request.AddBookWebRequest;
 import com.hendisantika.springbootreactivewebapi.dto.request.UpdateBookRequest;
 import com.hendisantika.springbootreactivewebapi.dto.request.UpdateBookWebRequest;
+import com.hendisantika.springbootreactivewebapi.dto.response.BookResponse;
 import com.hendisantika.springbootreactivewebapi.entity.ErrorCode;
 import com.hendisantika.springbootreactivewebapi.service.book.BookService;
 import org.junit.Test;
@@ -20,6 +21,7 @@ import rx.Completable;
 import rx.Single;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
@@ -121,6 +123,23 @@ public class BookRestControllerTest {
                 .andExpect(jsonPath("$.data", nullValue()));
 
         verify(bookService, times(1)).updateBook(any(UpdateBookRequest.class));
+    }
+
+    @Test
+    public void GetAllBooks_LimitAndPageSpecified_Success_Return200WithListOfBookWebResponse() throws Exception {
+        when(bookService.getAllBooks(anyInt(), anyInt()))
+                .thenReturn(Single.just(Collections.singletonList(new BookResponse("1", "1", "1"))));
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/books?limit=5&page=0")
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errorCode", nullValue()))
+                .andExpect(jsonPath("$.data[0].id", equalTo("1")));
+
+        verify(bookService, times(1)).getAllBooks(anyInt(), anyInt());
     }
 
 
