@@ -159,5 +159,39 @@ public class BookRestControllerTest {
         verify(bookService, times(1)).getAllBooks(anyInt(), anyInt());
     }
 
+    @Test
+    public void GetBookDetail_Success_Return200WithBookWebResponse() throws Exception {
+        when(bookService.getBookDetail(anyString()))
+                .thenReturn(Single.just(new BookResponse("1", "1", "1")));
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/books/1")
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errorCode", nullValue()))
+                .andExpect(jsonPath("$.data.id", equalTo("1")));
+
+        verify(bookService, times(1)).getBookDetail(anyString());
+    }
+
+    @Test
+    public void GetBookDetail_Failed_BookIdNotFound_Return404EntityNotFound() throws Exception {
+        when(bookService.getBookDetail(anyString()))
+                .thenReturn(Single.error(new EntityNotFoundException()));
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/books/1")
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorCode", equalTo(ErrorCode.ENTITY_NOT_FOUND.toString())))
+                .andExpect(jsonPath("$.data", nullValue()));
+
+        verify(bookService, times(1)).getBookDetail(anyString());
+    }
+
 
 }
