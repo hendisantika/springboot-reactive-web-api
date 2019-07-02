@@ -4,6 +4,8 @@ import com.hendisantika.springbootreactivewebapi.dto.request.AddAuthorRequest;
 import com.hendisantika.springbootreactivewebapi.dto.request.AddAuthorWebRequest;
 import com.hendisantika.springbootreactivewebapi.dto.response.BaseWebResponse;
 import com.hendisantika.springbootreactivewebapi.service.author.AuthorService;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,8 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import rx.Single;
-import rx.schedulers.Schedulers;
 
 import java.net.URI;
 
